@@ -1,0 +1,26 @@
+name: Push Tag Workflow
+
+on:
+  push:
+    tags:
+      - '*' # Se ejecuta para cualquier tag
+
+jobs:
+  extract-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.extract_tag.outputs.tag }}
+    steps:
+      - name: Extraer nombre del tag
+        id: extract_tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+        env:
+          GITHUB_REF: ${{ github.ref }}
+
+  use-tag:
+    needs: extract-tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Imprimir el tag recibido
+        run: |
+          echo "El tag es: ${{ needs.extract-tag.outputs.tag_name }}"
